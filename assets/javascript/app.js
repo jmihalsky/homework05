@@ -3,6 +3,8 @@ var correct = 0;
 var wrong = 0;
 var unaswr = 0;
 var timer_run = false;
+var lvl1_time = 20;
+
 
 var level1 = [
      {
@@ -62,6 +64,7 @@ $("#start_btn").on("click",function() {
     $("#start_btn").css("display","none");
     set_questions();
     $("#submit").css("display","block");
+
 });
 
 function set_questions(){
@@ -71,15 +74,37 @@ function set_questions(){
         {
             question(i);
             options(i);
-            if(!timer_run)
-            {
-                timer_run = true;
-            }
-        }    
+            
+        }  
+        if(!timer_run)
+        {
+            timer_run = true;
+            $("#timer").html("<h2>Time Left: "+lvl1_time+" seconds</h2>");    
+            quiz_time();
+        }  
     }
     else if (level == "level2")
     {
 
+    }
+}
+
+function quiz_time(){
+    intID = setInterval(dec, 1000);
+}
+
+function dec(){
+    if (lvl1_time === 0)
+    {
+        timer_run = false;
+        clearInterval(intID);
+        $("#submit").css("display","none");
+        lvl1_valid();
+    }
+    else
+    {
+        lvl1_time--;
+        $("#timer").html("<h2>Time Left: "+lvl1_time+" seconds</h2>");
     }
 }
 
@@ -117,17 +142,25 @@ function options(x){
 $("#submit").on("click",function() {
     if (level == "level1")
     {
-        for(var i = 0; i < level1.length; i++)
-        {
-            answr_valid(i);
-            score();
-        }
+        timer_run = false;
+        clearInterval(intID);
+        $("#submit").css("display","none");
+        lvl1_valid();
     }
     else if (level == "level2")
     {
 
     }
 });
+
+function lvl1_valid(){
+    for(var i = 0; i < level1.length; i++)
+        {
+            answr_valid(i);
+            
+        }
+        score();
+}
 
 function answr_valid(x){
     if($("input[name="+x+"]:checked").attr("id") == level1[x].aswr)
@@ -146,5 +179,42 @@ function answr_valid(x){
 }
 
 function score(){
+    $(".ques-space").empty();
+    var rlts_title = $("<h3>");
+    if(level == "level1")
+    {
+        rlts_title.html("Level 1 Results");
+    }
+    else if (level == "level2")
+    {
+        rlts_title.html("Level 2 Results");
+    }
+    $(".ques-space").append(rlts_title);
 
+    // create table for displaying results.
+    var tbl = $("<table>");
+    var tbdy = $("<tbody>");
+    var trow1 = $("<tr>");
+    var trow2 = $("<tr>");
+    var trow3 = $("<tr>");
+
+    tbl.addClass("results");
+    tbl.append(tbdy);
+    
+
+    var corhd = $("<th>").html("Questions Correct:");
+    var cor = $("<td>").html(correct);
+    trow1.append(corhd,cor);
+    
+    var wrghd = $("<th>").html("Questions Wrong:");
+    var wrg = $("<td>").html(wrong);
+    trow2.append(wrghd,wrg);
+
+    var uahd = $("<th>").html("Questions Unaswered:");
+    var ua = $("<td>").html(unaswr);
+    trow3.append(uahd, ua);
+
+    tbl.append(trow1, trow2, trow3);
+    
+    $(".ques-space").append(tbl);
 }
