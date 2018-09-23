@@ -144,7 +144,21 @@ function set_questions(){
     }
     else if (level == "level2")
     {
-
+        if (lvl2_i < 10)
+        {
+            question2(lvl2_i);
+            options2(lvl2_i);
+            if(!timer_run)
+            {
+                timer_run = true;
+                $("#timer").html("<h2>Time Left: "+lvl2_time+" seconds</h2>"); 
+                quiz_t();
+            }
+        }
+        else
+        {
+            score();
+        }
     }
 }
 
@@ -167,6 +181,26 @@ function dec(){
     }
 }
 
+function quiz_t(){
+    intID = setInterval(dr, 1000);
+}
+
+function dr(){
+    if (lvl2_time === 0)
+    {
+        timer_run = false;
+        clearInterval(intID);
+        // $("#submit").css("display","none");
+        lvl2_valid();
+        lvl2_time = 5;
+    }
+    else
+    {
+        lvl2_time--;
+        $("#timer").html("<h2>Time Left: "+lvl2_time+" seconds</h2>");
+    }
+}
+
 function question(x){
     var clss = x;
     console.log(clss);
@@ -174,6 +208,18 @@ function question(x){
     var ques_col = $("<div>");
     ques_col.addClass("quest " + clss);
     ques_col.html("<br>"+ level1[x].question+"</br>");
+    console.log(ques_col);
+
+    $(".ques-space").append(ques_col);
+}
+
+function question2(x){
+    var clss = x;
+    console.log(clss);
+    console.log(level2[x].question);
+    var ques_col = $("<div>");
+    ques_col.addClass("quest " + clss);
+    ques_col.html("<br>"+ level2[x].question+"</br>");
     console.log(ques_col);
 
     $(".ques-space").append(ques_col);
@@ -198,6 +244,25 @@ function options(x){
     
 }
 
+function options2(x){
+    var ques_opt = $("<div>");
+    ques_opt.addClass("Q"+x);
+    for(var i=0; i<level2[x].opt.length;i++){
+        var InputOpt = $("<input>");
+        InputOpt.attr("type","radio");
+        InputOpt.attr("name", x);
+        InputOpt.attr("id", i);
+        var lbl = $("<label>");
+        lbl.attr("for",i);
+        lbl.html(level2[x].opt[i]);
+        ques_opt.append(InputOpt);
+        ques_opt.append(lbl);
+    }
+
+    $(".ques-space").append(ques_opt);
+    
+}
+
 $("#submit").on("click",function() {
     if (level == "level1")
     {
@@ -208,7 +273,9 @@ $("#submit").on("click",function() {
     }
     else if (level == "level2")
     {
-        
+        timer_run = false;
+        clearInterval(intID);
+        lvl2_valid();
     }
 });
 
@@ -252,6 +319,17 @@ function lvl1_valid(){
         $("#reset").css("display","block"); 
         $("#submit").css("display","none");
     }    
+}
+
+function lvl2_valid(){
+    if (lvl2_i < 10)
+    {
+        answr_valid(lvl2_i);
+        lvl2_i++;
+        $(".ques-space").empty();
+        set_questions();
+    }
+    
 }
 
 function answr_valid(x){
